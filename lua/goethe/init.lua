@@ -4,6 +4,11 @@ local opts = {
   auto_persist = true,
   override_groups = {},
 }
+local save_history = nil
+M.picker = nil
+local history = require("goethe.history") or {}
+M.picker = history.picker or nil
+save_history = history.save_history or nil
 
 local get_script_path = function()
   local src = debug.getinfo(2, "S").source
@@ -22,12 +27,12 @@ end
 local load_theme = function()
   local path = get_script_path()
   local file = io.open(path .. "theme.json", "r")
-  if file == nil then
+  if not file then
     return
   end
   local theme_json = file:read("*a")
   local theme = vim.fn.json_decode(theme_json)["theme"]
-  if theme == nil then
+  if not theme then
     return opts.default_theme
   end
   return theme
@@ -45,13 +50,16 @@ local auto_persist = function()
       callback = function()
         local path = get_script_path()
         local file = io.open(path .. "theme.json", "w+")
-        if file == nil then
+        if not file then
           return
         end
         local theme = vim.g.colors_name
         local theme_json = '{ "theme": "' .. theme .. '" }'
         file.write(file, theme_json)
         update_groups()
+        if save_history then
+          save_history(theme)
+        end
       end,
     })
   end
@@ -60,17 +68,20 @@ end
 M.persist = function()
   local path = get_script_path()
   local file = io.open(path .. "theme.json", "w+")
-  if file == nil then
+  if not file then
     return
   end
   local theme = vim.g.colors_name
   local theme_json = '{ "theme": "' .. theme .. '" }'
   file.write(file, theme_json)
+  if save_history then
+    save_history(theme)
+  end
 end
 
 M.setup = function(user_opts)
   for key in pairs(opts) do
-    if user_opts[key] ~= nil then
+    if user_opts[key] then
       opts[key] = user_opts[key]
     end
   end
