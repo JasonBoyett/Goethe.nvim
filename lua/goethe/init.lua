@@ -8,6 +8,7 @@ local save_history = nil
 M.picker = nil
 local history = require("goethe.history")
 M.picker = history.picker
+M.reset_history = history.reset_history or nil
 save_history = history.save_history or nil
 
 local get_script_path = function()
@@ -24,18 +25,22 @@ local function update_hl(group, tbl)
   vim.api.nvim_set_hl(0, group, new_hl)
 end
 
-local load_theme = function()
+local get_theme = function()
   local path = get_script_path()
   local file = io.open(path .. "theme.json", "r")
   if not file then
-    return
+    return opts.default_theme
   end
   local theme_json = file:read("*a")
   local theme = vim.fn.json_decode(theme_json)["theme"]
   if not theme then
     return opts.default_theme
   end
-  return theme
+  if theme == "" then
+    return opts.default_theme
+  else
+    return theme
+  end
 end
 
 local function update_groups()
@@ -55,7 +60,7 @@ local auto_persist = function()
         end
         local theme = vim.g.colors_name
         local theme_json = '{ "theme": "' .. theme .. '" }'
-        file.write(file, theme_json)
+        file:write(theme_json)
         update_groups()
         if save_history then
           save_history(theme)
@@ -73,7 +78,7 @@ M.persist = function()
   end
   local theme = vim.g.colors_name
   local theme_json = '{ "theme": "' .. theme .. '" }'
-  file.write(file, theme_json)
+  file:write(theme_json)
   if save_history then
     save_history(theme)
   end
@@ -85,9 +90,25 @@ M.setup = function(user_opts)
       opts[key] = user_opts[key]
     end
   end
-  vim.cmd.colorscheme(load_theme())
+  vim.cmd.colorscheme(get_theme())
   auto_persist()
   update_groups()
 end
+
+M.reset = function()
+  local path = get_script_path()
+  local file = io.open(path .. "theme.json", "w+")
+  if not file then
+    return
+  end
+  local theme = opts.default_theme
+  local theme_json = '{ "theme": "' .. theme .. '" }'
+  file:write(theme_json)
+  if save_history then
+    save_history(theme)
+  end
+  M.setup(opts)
+end
+
 
 return M

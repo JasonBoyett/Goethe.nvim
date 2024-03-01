@@ -4,6 +4,8 @@ local empty_module = {
   end,
   save_history = function()
   end,
+  reset_history = function()
+  end,
 }
 -- pcall all dependencies from telescope to avoid errors when telescope is not installed
 local ok, _ = pcall(require, "telescope")
@@ -130,6 +132,16 @@ M.save_history = function(new_theme)
   end
   local history_json = stringify_history()
   file.write(file, history_json)
+  file:close()
+end
+
+M.reset_history = function()
+  local path = get_history_path()
+  local file = io.open(path .. "history.json", "w+")
+  if not file then
+    return
+  end
+  file:write('{"history": []}')
   file:close()
 end
 
