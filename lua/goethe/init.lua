@@ -107,6 +107,7 @@ M.reset = function()
   if save_history then
     save_history(theme)
   end
+  file:close()
   M.setup(opts)
 end
 
