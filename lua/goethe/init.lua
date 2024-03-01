@@ -6,8 +6,8 @@ local opts = {
 }
 local save_history = nil
 M.picker = nil
-local history = require("goethe.history") or {}
-M.picker = history.picker or nil
+local history = require("goethe.history")
+M.picker = history.picker
 save_history = history.save_history or nil
 
 local get_script_path = function()

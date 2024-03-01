@@ -1,13 +1,40 @@
-local _, ok = pcall(require, "telescope")
+local empty_module = {
+  picker = function()
+    vim.notify("Missing dependencies: telescope", vim.log.levels.ERROR)
+  end,
+  save_history = function()
+  end,
+}
+-- pcall all dependencies from telescope to avoid errors when telescope is not installed
+local ok, _ = pcall(require, "telescope")
 if not ok then
-  return
+  return empty_module
 end
-
-local pickers = require "telescope.pickers"
-local finders = require "telescope.finders"
-local conf = require("telescope.config").values
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
+local pickers_ok, _ = pcall(require, "telescope.pickers")
+if not pickers_ok then
+  return empty_module
+end
+local finders_ok, _ = pcall(require, "telescope.finders")
+if not finders_ok then
+  return empty_module
+end
+local config_ok, _ = pcall(require, "telescope.config")
+if not config_ok then
+  return empty_module
+end
+local actions_ok, _ = pcall(require, "telescope.actions")
+if not actions_ok then
+  return empty_module
+end
+local state_ok, _ = pcall(require, "telescope.actions.state")
+if not state_ok then
+  return empty_module
+end
+local pickers = require("telescope.pickers")
+local finders = require("telescope.finders")
+local config = require("telescope.config")
+local actions = require("telescope.actions")
+local action_state = require("telescope.actions.state")
 local M = {}
 
 local reverse = function(tbl)
@@ -53,20 +80,23 @@ local get_history = function()
   local history = vim.fn.json_decode(history_json)["history"]
   if not history then
     file:close()
-    return
+    return {}
   end
   file:close()
   return reverse(history)
 end
 
 M.picker = function(opts)
+  if not pickers then
+    return
+  end
   opts = opts or {}
   pickers.new(opts, {
     prompt_title = "Theme History",
     finder = finders.new_table {
       results = get_history(),
     },
-    sorter = conf.generic_sorter(opts),
+    sorter = config.values.generic_sorter(opts),
     attach_mappings = function(prompt_bufnr)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
