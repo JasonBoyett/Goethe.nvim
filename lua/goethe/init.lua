@@ -29,6 +29,9 @@ end
 local override_theme = function(theme)
   for _, group in pairs(opts.theme_overrides) do
     if theme == group.theme then
+      if not group.variant then
+        return theme
+      end
       return group.variant
     end
   end
