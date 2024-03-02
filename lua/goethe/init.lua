@@ -3,6 +3,7 @@ local opts = {
   default_theme = "default",
   auto_persist = true,
   override_groups = {},
+  theme_overrides = {},
 }
 local save_history = nil
 M.picker = nil
@@ -25,6 +26,15 @@ local function update_hl(group, tbl)
   vim.api.nvim_set_hl(0, group, new_hl)
 end
 
+local override_theme = function(theme)
+  for _, group in pairs(opts.theme_overrides) do
+    if theme == group.theme then
+      return group.variant
+    end
+  end
+  return theme
+end
+
 local get_theme = function()
   local path = get_script_path()
   local file = io.open(path .. "theme.json", "r")
@@ -34,12 +44,12 @@ local get_theme = function()
   local theme_json = file:read("*a")
   local theme = vim.fn.json_decode(theme_json)["theme"]
   if not theme then
-    return opts.default_theme
+    return override_theme(opts.default_theme)
   end
   if theme == "" then
-    return opts.default_theme
+    return override_theme(opts.default_theme)
   else
-    return theme
+    return override_theme(theme)
   end
 end
 
