@@ -49,8 +49,14 @@ example custom configuration
         default_theme = "vscode", -- The theme that will load if your saved theme cannot be found.
         auto_persist = true, -- When true, your theme will be saved automatically. When false, it will have to be done manually.
         override_group = { -- Highlight groups that will override your theme.
-            group = "Comment", -- The group you wish to override.
-            tbl = { fg = "#9c7322" } -- A table of the overrides to be applied.
+            {
+                group = "comment", -- The group you wish to override.
+                tbl = { fg = "#9c7322" } -- A table of the overrides to be applied.
+            },
+            {
+                group = "conditional",
+                theme = { italic = true },
+            },
         },
         theme_overrides = { -- Some themes have variants that you may wish to use instead of the base theme. Use this option to override the main theme with its variant.
             {
