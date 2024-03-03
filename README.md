@@ -68,9 +68,9 @@ example custom configuration
 
 ### Understanding `theme_overrides`
 
-The `theme_overrides` option in Goethe.nvim allows you to specify that when certain themes are selected, a specific variant of that theme should be used instead. This is particularly useful for themes that offer multiple variants but do not explicitly change the `g:colorscheme` variable to reflect the chosen variant. By specifying theme overrides, you ensure Goethe accurately persists your exact theme preferences, including any specific variants, across sessions.
+The `theme_overrides` option in Goethe.nvim allows you to specify that when certain themes are selected, a specific variant of that theme should be used instead. This is particularly useful for themes that offer multiple variants but do not explicitly change the `g:colors_name` variable to reflect the chosen variant. By specifying theme overrides, you ensure Goethe accurately persists your exact theme preferences, including any specific variants, across sessions.
 
-For example, if you prefer the "tokyonight-storm" variant over the default "tokyonight" theme, configuring `theme_overrides` allows Goethe to remember and apply "tokyonight-storm" even though NeoVim's `g:colorscheme` might only recognize it as "tokyonight". This feature supports multiple overrides, enabling a customized and nuanced theme setup tailored to your preferences.
+For example, if you prefer the "tokyonight-storm" variant over the default "tokyonight" theme, configuring `theme_overrides` allows Goethe to remember and apply "tokyonight-storm" even though NeoVim's `g:colors_name` might only recognize it as "tokyonight". This feature supports multiple overrides, enabling a customized and nuanced theme setup tailored to your preferences.
 
 ### Commands
 
