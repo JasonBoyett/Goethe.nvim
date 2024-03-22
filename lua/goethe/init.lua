@@ -66,7 +66,6 @@ local auto_persist = function()
   if opts.auto_persist == true then
     vim.api.nvim_create_autocmd(
       "ColorScheme",
-      "colorscheme",
       {
         callback = function()
           local path = get_script_path()
