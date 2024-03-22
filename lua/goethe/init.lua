@@ -64,22 +64,25 @@ end
 
 local auto_persist = function()
   if opts.auto_persist == true then
-    vim.api.nvim_create_autocmd("ColorScheme", {
-      callback = function()
-        local path = get_script_path()
-        local file = io.open(path .. "theme.json", "w+")
-        if not file then
-          return
-        end
-        local theme = vim.g.colors_name
-        local theme_json = '{ "theme": "' .. theme .. '" }'
-        file:write(theme_json)
-        update_groups()
-        if save_history then
-          save_history(theme)
-        end
-      end,
-    })
+    vim.api.nvim_create_autocmd(
+      "ColorScheme",
+      "colorscheme",
+      {
+        callback = function()
+          local path = get_script_path()
+          local file = io.open(path .. "theme.json", "w+")
+          if not file then
+            return
+          end
+          local theme = vim.g.colors_name
+          local theme_json = '{ "theme": "' .. theme .. '" }'
+          file:write(theme_json)
+          update_groups()
+          if save_history then
+            save_history(theme)
+          end
+        end,
+      })
   end
 end
 
