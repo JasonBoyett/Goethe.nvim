@@ -55,7 +55,7 @@ example custom configuration
             },
             {
                 group = "conditional",
-                theme = { italic = true },
+                tbl = { italic = true },
             },
         },
         theme_overrides = { -- Some themes have variants that you may wish to use instead of the base theme. Use this option to override the main theme with its variant.
