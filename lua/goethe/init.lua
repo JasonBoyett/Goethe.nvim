@@ -4,6 +4,7 @@ local opts = {
   auto_persist = true,
   override_groups = {},
   theme_overrides = {},
+  auto_override = false,
 }
 local save_history = nil
 M.picker = nil
@@ -64,24 +65,32 @@ end
 
 local auto_persist = function()
   if opts.auto_persist == true then
-    vim.api.nvim_create_autocmd(
-      "ColorScheme",
-      {
-        callback = function()
-          local path = get_script_path()
-          local file = io.open(path .. "theme.json", "w+")
-          if not file then
-            return
-          end
-          local theme = vim.g.colors_name
-          local theme_json = '{ "theme": "' .. theme .. '" }'
-          file:write(theme_json)
-          update_groups()
-          if save_history then
-            save_history(theme)
-          end
-        end,
-      })
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      callback = function()
+        local path = get_script_path()
+        local file = io.open(path .. "theme.json", "w+")
+        if not file then
+          return
+        end
+        local theme = vim.g.colors_name
+        local theme_json = '{ "theme": "' .. theme .. '" }'
+        file:write(theme_json)
+        update_groups()
+        if save_history then
+          save_history(theme)
+        end
+      end,
+    })
+  end
+end
+
+local auto_override = function(theme)
+  if opts.auto_override then
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      callback = function()
+        override_theme(theme)
+      end,
+    })
   end
 end
 
@@ -100,14 +109,16 @@ M.persist = function()
 end
 
 M.setup = function(user_opts)
+  local theme = get_theme()
   for key in pairs(opts) do
     if user_opts[key] then
       opts[key] = user_opts[key]
     end
   end
-  vim.cmd.colorscheme(get_theme())
+  vim.cmd.colorscheme(theme)
   auto_persist()
   update_groups()
+  auto_override(theme)
 end
 
 M.reset = function()
@@ -125,6 +136,5 @@ M.reset = function()
   file:close()
   M.setup(opts)
 end
-
 
 return M
